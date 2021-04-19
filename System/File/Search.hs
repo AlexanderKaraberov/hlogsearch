@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiWayIf #-}
 
-module System.FileSearch (
+module System.File.Search (
     searchLog,
     searchLog',
     searchLogUntil,
@@ -15,22 +15,22 @@ import System.IO
       IOMode(ReadMode) )
 import Data.Maybe (fromMaybe)
 import Data.Time.Clock (UTCTime (UTCTime), diffUTCTime, NominalDiffTime)
-import Data.Time.UTCTimes (compareLogTimes, mkUTCTime, zeroUTCJulianDay)
+import Data.Time.UTCTimes (compareLogTimes, mkUTCTime, safelyParseISO8601)
 import System.PosixCompat (getFileStatus)
 import System.PosixCompat.Files (fileSize)
 import Data.Time.ISO8601 ( parseISO8601 )
 
 -- Search a log file with 1 millisecond precision searching the whole log file until eof.
-searchLog :: String -> UTCTime -> IO (Maybe (UTCTime, Integer))
-searchLog file key = do 
+searchLog' :: String -> UTCTime -> IO (Maybe (UTCTime, Integer))
+searchLog' file key = do 
     fileSize <- getFileSize file
     -- assume one millisecond log precision as a sensible default.
     let precision = 0.001
     searchLogUntil file key fileSize precision
 
--- Same as searchLog but allow to specify a custom log time precision.
-searchLog' :: String -> UTCTime -> NominalDiffTime -> IO (Maybe (UTCTime, Integer))
-searchLog' file key precision = do 
+-- Same as searchLog' but with a custom log time precision.
+searchLog :: String -> UTCTime -> NominalDiffTime -> IO (Maybe (UTCTime, Integer))
+searchLog file key precision = do 
     fileSize <- getFileSize file
     searchLogUntil file key fileSize precision
 
@@ -67,7 +67,7 @@ utcTimeFromLog :: IO String -> IO UTCTime
 utcTimeFromLog log = do 
                     logEntry <- log
                     let _:time:_ = words logEntry
-                    return $ fromMaybe zeroUTCJulianDay $ parseISO8601 time
+                    return $ safelyParseISO8601 time
 
 getFileSize :: String -> IO Integer
 getFileSize path = do

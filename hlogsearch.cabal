@@ -4,7 +4,8 @@ version:             0.1.0.0
 synopsis:            Minimalistic tool to search for log entries in large files.
 description:
   Allows to find log lines and their position (offset) in large log files using a very 
-  precise log entry datetime as a search key, with up to 1 microsecond precision in case of voluminous and noisy logs.
+  precise log entry datetime as a search key, with up to 1 picosecond precision in case of 
+  voluminous and noisy debug logs.
 license:             MIT
 license-file:        LICENSE
 author:              Oleksandr Karaberov
@@ -16,6 +17,6 @@ extra-source-files:  CHANGELOG.md
 
 executable hlogsearch
   main-is:             Main.hs
-  other-modules:       System.FileSearch, Data.Time.UTCTimes
-  build-depends:       base >=4.14 && <4.15, time, unix-compat, iso8601-time
+  other-modules:       System.File.Search, Data.Time.UTCTimes
+  build-depends:       base >=4.14 && <4.15, time, unix-compat, iso8601-time, optparse-applicative
   default-language:    Haskell2010
